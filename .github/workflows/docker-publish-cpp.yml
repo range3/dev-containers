@@ -3,6 +3,7 @@ name: Docker Publish for cpp
 on:
   push:
     paths:
+      - '.github/workflows/docker-publish-cpp.yml'
       - 'containers/cpp/**'
     branches:
       - master
@@ -24,11 +25,10 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ github.repository_owner }}/dev
-            ghcr.io/${{ github.repository_owner }}/dev
-          flavor: |
-            prefix=cpp-
+            ${{ github.repository_owner }}/dev-cpp
+            ghcr.io/${{ github.repository_owner }}/dev-cpp
           tags: |
+            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
@@ -58,10 +58,10 @@ jobs:
         uses: docker/build-push-action@v2.2.0
         with:
           context: containers/cpp
-          file: Dockerfile
+          file: containers/cpp/Dockerfile
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ github.repository_owner }}/dev:cpp-buildcache
-          cache-to: type=registry,ref=${{ github.repository_owner }}/dev:cpp-buildcache,mode=max
+          cache-from: type=registry,ref=${{ github.repository_owner }}/dev-cpp:buildcache
+          cache-to: type=registry,ref=${{ github.repository_owner }}/dev-cpp:buildcache,mode=max
