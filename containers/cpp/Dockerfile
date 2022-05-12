@@ -1,5 +1,4 @@
-ARG VARIANT="bullseye"
-FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-bullseye
 
 ENV EDITOR vim
 ENV CPM_SOURCE_CACHE ~/.cache/CPM
@@ -15,8 +14,8 @@ RUN \
     pkg-config \
     vim \
     bash-completion \
-    gfortran-9 \
-    clang-9 \
+    gfortran-10 \
+    clang \
     clang-format \
     clang-tidy \
     clang-tools \
