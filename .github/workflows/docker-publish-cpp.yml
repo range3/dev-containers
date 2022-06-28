@@ -8,7 +8,9 @@ on:
     branches:
       - master
     tags:
-      - v*
+     - v*
+  schedule:
+    - cron:  '35 23 * * *'
 
 jobs:
   push:
