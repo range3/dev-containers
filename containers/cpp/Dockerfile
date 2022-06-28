@@ -1,8 +1,9 @@
 FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-bullseye
 
-ENV EDITOR vim
-ENV CPM_SOURCE_CACHE ~/.cache/CPM
+ARG SPACK_BRANCH=develop
 ENV SPACK_ROOT=/home/vscode/.cache/spack
+ENV CPM_SOURCE_CACHE ~/.cache/CPM
+ENV EDITOR vim
 
 SHELL ["/bin/bash", "-c"]
 
@@ -30,11 +31,13 @@ RUN \
   && rm -rf /var/lib/apt/lists/*
 
 COPY spack.sh /etc/profile.d/03-spack.sh
+ADD https://api.github.com/repos/spack/spack/git/refs/heads/${SPACK_BRANCH} /tmp/spack-version.json
 
 USER vscode
 RUN \
   # spack
-  git clone -c feature.manyFiles=true https://github.com/spack/spack.git "${SPACK_ROOT}" \
+  git clone -b $SPACK_BRANCH -c feature.manyFiles=true https://github.com/spack/spack.git "${SPACK_ROOT}" \
+  && mkdir -p /home/vscode/.spack \
   && printf "%s\n" \
     '' \
     '# activate default spack env' \
