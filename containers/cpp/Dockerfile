@@ -20,6 +20,7 @@ RUN \
     clang-format \
     clang-tidy \
     clang-tools \
+    cmake-format \
     iwyu \
     tree \
     file \
