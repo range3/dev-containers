@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-bullseye
 
 ARG SPACK_BRANCH=develop
 ENV SPACK_ROOT=/home/vscode/.cache/spack
-ENV CPM_SOURCE_CACHE ~/.cache/CPM
+ENV CPM_SOURCE_CACHE=/home/vscode/.cache/CPM
 ENV EDITOR vim
 
 SHELL ["/bin/bash", "-c"]
