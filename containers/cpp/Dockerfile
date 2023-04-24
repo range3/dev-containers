@@ -1,9 +1,10 @@
-FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-bullseye
+FROM mcr.microsoft.com/devcontainers/cpp:0-debian-11
 
 ARG SPACK_BRANCH=develop
 ENV SPACK_ROOT=/home/vscode/.cache/spack
 ENV CPM_SOURCE_CACHE=/home/vscode/.cache/CPM
 ENV EDITOR vim
+ENV TZ=Asia/Tokyo
 
 SHELL ["/bin/bash", "-c"]
 
@@ -12,6 +13,7 @@ RUN \
   export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get -y install --no-install-recommends \
+    apt-file \
     pkg-config \
     vim \
     bash-completion \
