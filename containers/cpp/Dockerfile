@@ -1,23 +1,63 @@
-FROM mcr.microsoft.com/devcontainers/cpp:0-debian-11
+FROM mcr.microsoft.com/devcontainers/cpp:1-debian-12
+
+ARG REINSTALL_CMAKE_VERSION_FROM_SOURCE="3.22.2"
+
+# Optionally install the cmake for vcpkg
+COPY ./reinstall-cmake.sh /tmp/
+
+RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
+        chmod +x /tmp/reinstall-cmake.sh && /tmp/reinstall-cmake.sh ${REINSTALL_CMAKE_VERSION_FROM_SOURCE}; \
+    fi \
+    && rm -f /tmp/reinstall-cmake.sh
 
 ARG SPACK_BRANCH=develop
 ENV SPACK_ROOT=/home/vscode/.cache/spack
 ENV CPM_SOURCE_CACHE=/home/vscode/.cache/CPM
-ENV EDITOR vim
 ENV TZ=Asia/Tokyo
-
-SHELL ["/bin/bash", "-c"]
 
 RUN \
   # Common packages
   export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
-  && apt-get -y install --no-install-recommends \
+  && apt-get install -y --no-install-recommends \
+    ssh \
+    less \
+    tree \
+    git \
+    vim \
+    make \
     apt-file \
+  # locale
+  && apt-get install -y --no-install-recommends \
+    locales \
+  && sed -i -E 's/# (en_US.UTF-8)/\1/' /etc/locale.gen \
+  && sed -i -E 's/# (ja_JP.UTF-8)/\1/' /etc/locale.gen \
+  && locale-gen \
+  # timezone
+  && apt-get install -y --no-install-recommends \
+    tzdata \
+  && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
+  && dpkg-reconfigure tzdata \
+  # Clean up
+  && apt-get autoremove -y \
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV LANG ja_JP.UTF-8
+ENV LANGUAGE ja_JP:ja
+ENV LC_ALL ja_JP.UTF-8
+ENV EDITOR vim
+
+SHELL ["/bin/bash", "-c"]
+RUN \
+  # Common packages
+  export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update \
+  && apt-get -y install --no-install-recommends \
     pkg-config \
     vim \
     bash-completion \
-    gfortran-10 \
+    gfortran \
     clang \
     clang-format \
     clang-tidy \
@@ -33,7 +73,7 @@ RUN \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/*
 
-COPY spack.sh /etc/profile.d/03-spack.sh
+# COPY spack.sh /etc/profile.d/03-spack.sh
 ADD https://api.github.com/repos/spack/spack/git/refs/heads/${SPACK_BRANCH} /tmp/spack-version.json
 
 USER vscode
