@@ -73,7 +73,7 @@ RUN \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/*
 
-# COPY spack.sh /etc/profile.d/03-spack.sh
+COPY spack.sh /etc/profile.d/03-spack.sh
 ADD https://api.github.com/repos/spack/spack/git/refs/heads/${SPACK_BRANCH} /tmp/spack-version.json
 
 USER vscode
